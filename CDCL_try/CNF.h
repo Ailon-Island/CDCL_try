@@ -20,7 +20,7 @@ private:
 	void Unpick();
 	int Propa();
 	//0 for normal(regular conflict or successful propagatation), 1 for solution, 2 for empty conflict clause
-	void OriginAndGen(const std::vector< int > &sources);
+	void sourcer(const int &, const int &);
 	void addNum(const bool&, int&);
 public:
 	void gen(const int&, const int&);

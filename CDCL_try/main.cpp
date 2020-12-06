@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 
 using namespace std;
@@ -72,14 +73,14 @@ int main()
 				if (cnf->solve())
 				{
 					clockFinish = clock();
-					cout << "\nSAT\n";
+					cout << endl << setfill('0') << setw(8) << i + 1 << "\nSAT\n";
 					++satCount;
 					cnf->outputAssignment();
 				}
 				else
 				{
 					clockFinish = clock();
-					cout << "\nUNSAT\n";
+					cout << endl << setfill('0') << setw(8) << i + 1 << "\nUNSAT\n";
 					++unsatCount;
 				}
 				delete cnf;

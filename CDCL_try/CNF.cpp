@@ -1,6 +1,7 @@
 #include "cnf.h"
 
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <cmath>
 #include <random>
@@ -297,12 +298,8 @@ int CNF::UnitPro()
 		assignSeq.push_back(mark);
 		//cout //<< '\t' //<< cnf[i][q][1] //<< "|->" //<< ((assign->at(mark)) ? 'T' : 'F') //<< " from(" //<< i //<< ")\n";
 		//assign the propagated truth value and record the sequence
-		for (j = 0; j < cnf[i].size(); ++j)
-		{
-			if (!(cnf[i][j][1] == mark))
-				source[mark].push_back(cnf[i][j][1]);
-			//record the logical source of the truth value of the newly assigned variable
-		}
+		sourcer(mark, i);
+		//record the logical source of the truth value of the newly assigned variable
 		if (UnitPro() == 2)
 			return 2;
 		return 1;
@@ -330,32 +327,68 @@ int CNF::UnitPro()
 void CNF::ConflictClauseGen(const int &target)
 {
 	vector< int > toBeSearched;
-
+	int size;
+	bool flag;
 
 	cnf.push_back({});
 	//prepare for the new clause
+	
+	size = cnf.size() - 1;
 	for (int i = 0; i < cnf[target].size(); ++i)
-		toBeSearched.push_back(cnf[target][i][1]);
-	OriginAndGen(toBeSearched);
+	{
+		for (int j = 0; j < source[i].size(); ++j)
+		{
+			flag = 1;
+			for (int k = 0; k < cnf[size].size(); ++k)
+				if (source[i][j] == cnf[size][k][1])
+				{
+					flag = 0;
+					break;
+				}
+			if (flag)
+			{
+				cnf[size].push_back({});
+				cnf[size][cnf[size].size() - 1].push_back(!assign->at(source[i][j]));
+				cnf[size][cnf[size].size() - 1].push_back(source[i][j]);
+				
+			}
+		}
+	}
+	
+	/*for (int i = 0; i < cnf[target].size(); ++i)
+		toBeSearched.push_back(cnf[target][i][1]);*/
 	//cout //<< "\nConflictClauseGeneration:\n";
-	if (cnf[cnf.size() - 1].size() == 0)
+	if (!cnf[size].size())
 	{
 		//cout //<< "\tThe generated clause is Empty!\n";
 		return;
 	}
-	//cout //<< '(' //<< cnf.size() - 1 //<< "): ";
-	for (int j = 0; j < int(cnf[cnf.size() - 1].size()); ++j)
+	//cout //<< "\t(" //<< size //<< "): ";
+	for (int j = 0; j < cnf[size].size(); ++j)
 	{
-		//cout //<< ((cnf[cnf.size() - 1][j][0]) ? '+' : '-') //<< cnf[cnf.size() - 1][j][1];
+		//cout //<< ((cnf[size][j][0]) ? '+' : '-') //<< cnf[cnf.size() - 1][j][1];
 	}
 	//cout //<< endl;
 	Unpick();
 	return;
 }
 
-void CNF::OriginAndGen(const vector< int > &sources)
+void CNF::sourcer(const int &mark, const int &i)
 {
-	bool flag = 1;
+	for (int j = 0; j < cnf[i].size(); ++j)
+	{
+		if (cnf[i][j][1] != mark)
+		{
+			for (int k = 0; k < source[cnf[i][j][1]].size(); ++k)
+			{
+				if (find(source[mark].begin(), source[mark].end(), source[cnf[i][j][1]][k]) == source[mark].end())
+				{
+					source[mark].push_back(source[cnf[i][j][1]][k]);
+				}
+			}
+		}
+	}
+	/*bool flag = 1;
 
 	for (int i = 0; i < sources.size(); ++i)
 	{
@@ -376,7 +409,7 @@ void CNF::OriginAndGen(const vector< int > &sources)
 			}
 			else
 				OriginAndGen(source[sources[i]]);
-	}
+	}*/
 }
 
 void CNF::outputAssignment() const
