@@ -152,15 +152,26 @@ void CNF::gen(const int &varNum, const int &clauseNum)
 		existence->at(var) = 1;
 	}
 	//randomly generate a 3-CNF
-	//cout //<< "\ncnf generated!\n";
+	//cout << "\ncnf generated!\n";
+	//for (int i = 0; i < int(cnf.size()); ++i)
+	//{
+	//	//cout << '(' //<< i //<< "): ";
+	//	for (int j = 0; j < int(cnf[i].size()); ++j)
+	//	{
+	//		cout << ((cnf[i][j][0]) ? '+' : '-') << cnf[i][j][1] + 1 << ' ';
+	//	}
+	//	cout << '0';
+	//	cout << endl;
+	//}
+	cout << "\ncnf generated!\n";
 	for (int i = 0; i < int(cnf.size()); ++i)
 	{
-		//cout //<< '(' //<< i //<< "): ";
+		cout << '(' << i << "): ";
 		for (int j = 0; j < int(cnf[i].size()); ++j)
 		{
-			//cout //<< ((cnf[i][j][0]) ? '+' : '-') //<< cnf[i][j][1];
+			cout << ((cnf[i][j][0]) ? '+' : '-') << cnf[i][j][1] + 1;
 		}
-		//cout //<< endl;
+		cout << endl;
 	}
 	//output the cnf generated
 }
@@ -336,11 +347,11 @@ void CNF::ConflictClauseGen(const int &target)
 	size = cnf.size() - 1;
 	for (int i = 0; i < cnf[target].size(); ++i)
 	{
-		for (int j = 0; j < source[i].size(); ++j)
+		for (int j = 0; j < source[ cnf[target][i][1] ].size(); ++j)
 		{
 			flag = 1;
 			for (int k = 0; k < cnf[size].size(); ++k)
-				if (source[i][j] == cnf[size][k][1])
+				if (source[ cnf[target][i][1] ][j] == cnf[size][k][1])
 				{
 					flag = 0;
 					break;
@@ -348,8 +359,8 @@ void CNF::ConflictClauseGen(const int &target)
 			if (flag)
 			{
 				cnf[size].push_back({});
-				cnf[size][cnf[size].size() - 1].push_back(!assign->at(source[i][j]));
-				cnf[size][cnf[size].size() - 1].push_back(source[i][j]);
+				cnf[size][cnf[size].size() - 1].push_back(!assign->at(source[cnf[ target][i][1] ][j]));
+				cnf[size][cnf[size].size() - 1].push_back(source[ cnf[target][i][1] ][j]);
 				
 			}
 		}
